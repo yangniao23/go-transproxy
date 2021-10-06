@@ -10,9 +10,10 @@ import (
 	"strings"
 	"sync"
 
+	"os"
+
 	"github.com/cybozu-go/netutil"
 	"github.com/cybozu-go/transocks"
-	"os"
 )
 
 type TCPListener struct {
@@ -42,7 +43,7 @@ func (l *TCPListener) Accept() (net.Conn, error) {
 
 	tc, ok := c.(*net.TCPConn)
 	if !ok {
-		return c, fmt.Errorf("Accepted non-TCP connection - %v", c)
+		return c, fmt.Errorf("accepted non-TCP connection - %v", c)
 	}
 
 	origAddr, err := transocks.GetOriginalDST(tc)
