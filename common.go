@@ -48,7 +48,7 @@ func (l *TCPListener) Accept() (net.Conn, error) {
 
 	origAddr, err := transocks.GetOriginalDST(tc)
 	if err != nil {
-		return c, fmt.Errorf("GetOriginalDST failed - %s", err.Error())
+		return c, fmt.Errorf("get original DST failed - %s", err.Error())
 	}
 
 	log.Printf("debug: OriginalDST: %s", origAddr)
