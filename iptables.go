@@ -39,7 +39,7 @@ func GenerateRule(protocol string, dport int, tport int) []string {
 	if dport != 0 && tport != 0 {
 		return []string{NAT, PREROUTING, "-p", "tcp", "--dport", strconv.Itoa(dport), "-j", "REDIRECT", "--to-ports", strconv.Itoa(tport)}
 	} else {
-		return nil
+		return []string{""}
 	}
 }
 func NewIPTables(c *IPTablesConfig) (*IPTables, error) {
@@ -55,11 +55,11 @@ func NewIPTables(c *IPTablesConfig) (*IPTables, error) {
 
 	var dnsTCPOutRule []string
 	if c.PublicDNS != "" {
-		h, p, err := net.SplitHostPort(c.PublicDNS)
+		_, _, err := net.SplitHostPort(c.PublicDNS)
 		if err != nil {
 			c.PublicDNS = net.JoinHostPort(c.PublicDNS, "53")
 		}
-		h, p, _ = net.SplitHostPort(c.PublicDNS)
+		h, p, _ := net.SplitHostPort(c.PublicDNS)
 		dnsTCPOutRule = []string{NAT, OUTPUT, "-p", "tcp", "-d", h, "--dport", p, "-j", "REDIRECT", "--to-ports", strconv.Itoa(c.TCPToPort)}
 	}
 
@@ -111,7 +111,7 @@ func (t *IPTables) Stop() error {
 
 func (t *IPTables) Show() string {
 	rule := func(rules []string) string {
-		if t == nil {
+		if rules[0] == "" {
 			return ""
 		} else {
 			return fmt.Sprintf("iptables -t %s -I %s", rules[0], strings.Join(rules[1:], ""))
@@ -135,7 +135,7 @@ iptables -t %s -I %s`,
 }
 
 func (t *IPTables) Check(rule []string) {
-	if rule == nil {
+	if rule[0] == "" {
 		return
 	}
 	if t.err != nil || len(rule) < 3 {
@@ -163,7 +163,7 @@ func (t *IPTables) insertRule(rule []string) {
 }
 
 func (t *IPTables) deleteRule(rule []string) {
-	if rule == nil {
+	if rule[0] == "" {
 		return
 	}
 	// Don't skip when it has error for deleting all rules
