@@ -35,14 +35,15 @@ type IPTablesConfig struct {
 	PublicDNS   string
 }
 
-func GenerateRule(protocol string, dport int, tport int) []string {
-	if dport != 0 && tport != 0 {
-		return []string{NAT, PREROUTING, "-p", "tcp", "--dport", strconv.Itoa(dport), "-j", "REDIRECT", "--to-ports", strconv.Itoa(tport)}
-	} else {
-		return []string{""}
-	}
-}
 func NewIPTables(c *IPTablesConfig) (*IPTables, error) {
+	GenerateRule := func(protocol string, dport int, tport int) []string {
+		if dport == 0 || tport == 0 {
+			return []string{""}
+		} else {
+			return []string{NAT, PREROUTING, "-p", "tcp", "--dport", strconv.Itoa(dport), "-j", "REDIRECT", "--to-ports", strconv.Itoa(tport)}
+		}
+	}
+
 	t, err := iptables.New()
 	if err != nil {
 		return nil, err
@@ -68,6 +69,18 @@ func NewIPTables(c *IPTablesConfig) (*IPTables, error) {
 	httpRule := GenerateRule("tcp", 80, c.HTTPToPort)
 	httpsRule := GenerateRule("tcp", 443, c.HTTPSToPort)
 	tcpRule := []string{NAT, PREROUTING, "-p", "tcp", "-m", "multiport", "--dport", strings.Join(tcpDPorts, ","), "-j", "REDIRECT", "--to-ports", strconv.Itoa(c.TCPToPort)}
+
+	if c.TCPToPort == 0 {
+		dnsTCPOutRule = []string{""}
+		tcpRule = []string{""}
+	}
+
+	for _, v := range tcpDPorts {
+		if v == "0" {
+			tcpRule = []string{""}
+			break
+		}
+	}
 
 	return &IPTables{
 		iptables:      t,
@@ -111,13 +124,17 @@ func (t *IPTables) Stop() error {
 
 func (t *IPTables) Show() string {
 	rule := func(rules []string) string {
-		if rules[0] == "" {
-			return ""
+		if rules == nil {
+			return "nil"
 		} else {
-			return fmt.Sprintf("iptables -t %s -I %s", rules[0], strings.Join(rules[1:], ""))
+			if rules[0] == "" {
+				return ""
+			} else {
+				return fmt.Sprintf("iptables -t %s -I %s\n", rules[0], strings.Join(rules[1:], " "))
+			}
 		}
-
 	}
+
 	s := rule(t.tcpRule)
 	s += rule(t.httpsRule)
 	s += rule(t.httpRule)

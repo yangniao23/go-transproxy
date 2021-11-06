@@ -82,8 +82,8 @@ var (
 		"DNS-over-HTTPS endpoint URL",
 	)
 
-	dnsEnableTCP = fs.Bool("dns-tcp", true, "DNS Listen on TCP")
-	dnsEnableUDP = fs.Bool("dns-udp", true, "DNS Listen on UDP")
+	dnsEnableTCP    = fs.Bool("dns-tcp", true, "DNS Listen on TCP")
+	dnsEnableUDP    = fs.Bool("dns-udp", true, "DNS Listen on UDP")
 	disableIPTables = fs.Bool("disable-iptables", false, "Disable automatic iptables configuration")
 )
 
@@ -117,6 +117,7 @@ func main() {
 	if *explicitProxyOnly {
 		startExplicitProxyOnly(level)
 	} else {
+		log.Println("debug: startAllProxy")
 		startAllProxy(level)
 	}
 }
@@ -148,6 +149,7 @@ func startAllProxy(level colog.Level) {
 			NoProxy:       np,
 		},
 	)
+	log.Println("tcpProxyListenAddress: ", *tcpProxyListenAddress)
 	if err := tcpProxy.Start(); err != nil {
 		log.Fatalf("alert: %s", err.Error())
 	}
@@ -165,6 +167,7 @@ func startAllProxy(level colog.Level) {
 			NoProxyDomains:      np.Domains,
 		},
 	)
+	log.Println("debug: exec dnsProxy.Start()")
 	dnsProxy.Start()
 
 	httpProxy := transproxy.NewHTTPProxy(
@@ -219,12 +222,13 @@ func startAllProxy(level colog.Level) {
 			log.Printf("alert: %s", err.Error())
 		}
 
-		t.Start()
-
 		log.Printf(`info: iptables rules inserted as follows.
 ---
 %s
 ---`, t.Show())
+
+		t.Start()
+
 	}
 
 	// serve until exit

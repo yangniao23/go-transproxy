@@ -32,7 +32,11 @@ func (s TCPProxy) Start() error {
 		KeepAlive: 3 * time.Minute,
 		DualStack: true,
 	}
+	log.Println("debug: parse http_proxy")
 	u, err := url.Parse(GetProxyEnv("http_proxy"))
+	if u.String() == "" {
+		log.Fatalln("warn: enviromental variable $http_proxy is not setted")
+	}
 	if err != nil {
 		return err
 	}
