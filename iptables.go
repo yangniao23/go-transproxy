@@ -127,7 +127,7 @@ func (t *IPTables) Show() string {
 		if rules == nil {
 			return "nil"
 		} else {
-			if rules[0] == "" {
+			if len(rules) == 0 {
 				return ""
 			} else {
 				return fmt.Sprintf("iptables -t %s -I %s\n", rules[0], strings.Join(rules[1:], " "))
@@ -152,7 +152,8 @@ iptables -t %s -I %s`,
 }
 
 func (t *IPTables) Check(rule []string) {
-	if rule[0] == "" {
+	// []string{""} すると長さがゼロになるらしい
+	if len(rule) == 0 {
 		return
 	}
 	if t.err != nil || len(rule) < 3 {
