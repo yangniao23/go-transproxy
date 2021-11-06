@@ -16,5 +16,4 @@ require (
 	github.com/miekg/dns v0.0.0-20170812192144-0598bd43cf51
 	github.com/pkg/errors v0.8.0 // indirect
 	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d
-	golang.org/x/tools/gopls v0.7.3 // indirect
 )
