@@ -1,4 +1,4 @@
-module github.com/wadahiro/go-transproxy
+module github.com/yangniao23/go-transproxy
 
 go 1.13
 
@@ -15,6 +15,7 @@ require (
 	github.com/inconshreveable/go-vhost v0.0.0-20160627193104-06d84117953b
 	github.com/miekg/dns v0.0.0-20170812192144-0598bd43cf51
 	github.com/pkg/errors v0.8.0
-	golang.org/x/net v0.0.0-20170809000501-1c05540f6879
-	golang.org/x/sys v0.0.0-20170814191752-2d3e384235de
+	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d
+	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e
+	golang.org/x/tools/gopls v0.7.3 // indirect
 )
