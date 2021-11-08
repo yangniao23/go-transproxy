@@ -125,7 +125,7 @@ func (t *IPTables) Stop() error {
 func (t *IPTables) Show() string {
 	rule := func(rules []string) string {
 		if rules == nil {
-			return "nil"
+			return ""
 		} else {
 			if len(rules) == 0 {
 				return ""
