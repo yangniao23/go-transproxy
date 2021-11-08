@@ -124,14 +124,10 @@ func (t *IPTables) Stop() error {
 
 func (t *IPTables) Show() string {
 	rule := func(rules []string) string {
-		if rules == nil {
+		if len(rules) <= 1 {
 			return ""
 		} else {
-			if len(rules) == 0 {
-				return ""
-			} else {
-				return fmt.Sprintf("iptables -t %s -I %s\n", rules[0], strings.Join(rules[1:], " "))
-			}
+			return fmt.Sprintf("iptables -t %s -I %s\n", rules[0], strings.Join(rules[1:], " "))
 		}
 	}
 

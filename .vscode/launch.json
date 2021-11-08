@@ -13,7 +13,7 @@
             "env": {
                 "http_proxy": "http://rpi:3354",
             },
-            "args": ["-loglevel", "debug"]
+            "args": ["-tcp-proxy-dports", "0", "-dns-tcp=false", "-dns-udp=false", "-loglevel", "debug"]
         }
     ]
 }
